@@ -76,10 +76,14 @@ The database must implement those two primitives:
 - STORE:
 A STORE request shares with the server a piece of data -- a PARCEL -- that is supposed to be stored within the database, to be queried in the future.
 A PARCEL is composed of:
+
  a - A *program*: a piece of executable script that validates that a user is allowed to modify this parcel. The concept is similar to output
     scripts in Bitcoin.
+
  b - A *payload*: a piece of data that can be picked up by other users.
+
  c - A *witness*: a piece of data that cryptographically *proves* that this request was authorized.
+
  d - TTL: a requested time stamp for this PARCEL to be retained until, in a best effort basis. 
 
 The simplest form of a program is a public verifying key (ECDSA). In that case the *witness* will be a signature for the hash of the hashes
