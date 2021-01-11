@@ -55,6 +55,7 @@ TODO: Insert diagram here
 Elements of the architecture:
 
 1 - Database Server(s)
+
 2 - Clients
 
 ## The Database
@@ -67,6 +68,7 @@ The database used for this protocol is a very simplified data store:
 
 1 - No permission model for reading (all users have access to all data stored there, regardless of authentication). However, writing data
 should be restricted as explained below.
+
 2 - Only one numerical index which must allow both exact quries and range queries.
 
 The database must implement those two primitives:
@@ -136,14 +138,19 @@ parcel re-mailers as discussed further down.
 To establish a persistent bi-direction channel, users Alice and Bob must:
 
 1 - Alice generates an *invite* consisting of (invite signing key, encryption key).
+
 2 - Alice shares the *invite* with Bob using a side channel (the invite is assumed to be at least temporarily secure).
+
 3 - Bob generates a master key to be shared with Alice in an *open channel* message.
+
 4 - Bob publishes a parcel:
     - *program* is the invite's public verifying key
     - *payload* is the encrypted master public key from which the signing keys for future parcels will be derived.
     - *witness* is a signature generated using the invite's signing key.
+
 5 - Alice polls for the *open channel* message, using the hash of the public key corresponding to the signing key in the invite. 
     Once it is received, starts polling for the subsequent parcels using the keys derived from the master key.
+
 6 - Bob uses this Bob->Alice uni-directional channel to send Alice a new *invite* message for the corresponding Alice->Bob channel. Repeat
     steps 1-5 with Alice/Bob switching places.
 
@@ -168,7 +175,9 @@ Such a mailbox would be a tuple (encryption key, base hash, range).
 For Alice's to send an invite to Bob's mailbox she must:
 
 1 - Obtain (by multiple random attempts) a signing key such that it's hash lies between (base hash, base hash + range).
+
 2 - Encrypt the invite using Bob's encryption key.
+
 3 - Publish a parcel where:
     - *program* is the public key obtained in 1.
     - *payload* is the encrypted invite followed by the hash of the clear text invite.
@@ -177,7 +186,9 @@ For Alice's to send an invite to Bob's mailbox she must:
 To receive the invites Bob must:
 
 1 - Poll for parcels in the range (base hash, base hash + range).
+
 2 - For each parcel found the payload must be decrypted and the hash must match the clear text invite.
+
 3 - Parcels whose hashes and clear text invite don't match should be ignored.
 
 
@@ -201,11 +212,13 @@ To mitigate network analisys risks, the idea of the "public mail box" can be har
 For Alice to send a parcel to Bob, through a remailer Ron, she must:
 
 1 - Encrypt the parcel using Ron's mail box's encryption key.
+
 2 - Send the encrypted parcel to Ron's mail box.
 
 A remailer Ron would do as follows:
 
 1 - Publicly anounce his "open mail box" as willing to receive re-mailing requests.
+
 2 - When a message arrives at the mail box, decrypt it and publish the decrypted parcel to the server.
 
 Multiple remailers can be chained in onion-routing manner, further twarting network analysis -- as long as any one re-mailer
